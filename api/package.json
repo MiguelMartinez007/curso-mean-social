@@ -4,6 +4,7 @@
     "description": "BackEnd para el proyecto del curso desarrollar una red social con aAngula y Nodejs",
     "main": "index.js",
     "scripts": {
+        "start": "nodemon index.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Miguel Martinez",
