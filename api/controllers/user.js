@@ -58,11 +58,36 @@ function saveUser(req, res) {
             message: 'Envia todos los campos necesarios!!'
         });
     }
-}
+};
+
+/* Funcion para login */
+function loginUser(req, res) {
+    var params = req.body;
+
+    var email = params.email;
+    var password = params.password;
+
+    User.findOne({ email: email }, (err, user) => {
+        if (err) return res.status(500).send({ message: 'Error en la petición' });
+        if (user) {
+            bcrypt.compare(password, user.password, (err, check) => {
+                if (check) {
+                    // Devolber datos de usuario
+                    return res.status(200).send({ user });
+                } else {
+                    return res.status(404).send({ message: 'El usuario no se ha podido identificar' });
+                }
+            });
+        } else {
+            return res.status(404).send({ message: 'El usuario no se ha podido identificar!!' });
+        }
+    })
+};
 
 /* Se exportan los metodoes en formato json */
 module.exports = {
     home,
     pruebas,
-    saveUser
+    saveUser,
+    loginUser
 };
