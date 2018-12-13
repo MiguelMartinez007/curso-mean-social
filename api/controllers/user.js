@@ -67,18 +67,23 @@ function loginUser(req, res) {
     var email = params.email;
     var password = params.password;
 
+    /* Comparamos que exista un registro con este correo electronico, este metodo debuelve un error y un usuario */
     User.findOne({ email: email }, (err, user) => {
+        /* En caso de que exita un error en la peticion se precenta el siguient mensaje */
         if (err) return res.status(500).send({ message: 'Error en la petición' });
+        /* En caso de que no exista ningun error se verifica que exista un usuario */
         if (user) {
+            /* Com pa libreria de bcrypt se compara la contrasena para saver si esta coinside con la de la base de datos */
             bcrypt.compare(password, user.password, (err, check) => {
+                /* Se comprueba que si son iguales las contrasenas */
                 if (check) {
                     // Devolber datos de usuario
                     return res.status(200).send({ user });
-                } else {
+                } else { /* En caso de que no sean iguales las contrasenas se debuelve el siguient mensaje */
                     return res.status(404).send({ message: 'El usuario no se ha podido identificar' });
                 }
             });
-        } else {
+        } else { /* En caso de que no exista un usuario debuelto se muestra el siguiente error */
             return res.status(404).send({ message: 'El usuario no se ha podido identificar!!' });
         }
     })
@@ -86,8 +91,12 @@ function loginUser(req, res) {
 
 /* Se exportan los metodoes en formato json */
 module.exports = {
+    /* Mensaje */
     home,
+    /* Mensaje */
     pruebas,
+    /* Registra usuario */
     saveUser,
+    /* Accede usuario */
     loginUser
 };
