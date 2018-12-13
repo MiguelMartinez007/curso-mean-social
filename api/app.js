@@ -8,26 +8,18 @@ var app = express(); /* Nos carga el framework de express */
 /* Se tendran varias secciones */
 
 // Cargar rutas
+var use_routes = require('./routes/user');
 
 // middlewares
-app.use(bodyParser.urlencoded({ extended: false })); /* Es un metodo que se ejecuta antes de que legue a un cotrolador */
+app.use(bodyParser.urlencoded({ extended: false })); /* Es un metodo que se ejecuta antes de que llegue a un cotrolador */
 app.use(bodyParser.json()); /* Esto combertira la respuesta de la base de datos a un objeto json */
 
 // cors
 
 // rutas
-app.get('/', (req, res) => {
-    console.log(req.body); /* Se hace una impresion del objeto json */
-
-    res.status(200).send({
-        message: 'Hola mundo desde el servidor de nodejs'
-    });
-});
-app.get('/pruebas', (req, res) => {
-    res.status(200).send({
-        message: 'Accion de pruebas en el servidor'
-    });
-});
+/* Esta nos permite hacer midelwers, esta siempre se ejecuta antes de llegar a la accion del controlador 
+    tambien nos permite hacer nuevas direcciones*/
+app.use('/api', use_routes);
 
 // exportar
 module.exports = app;
