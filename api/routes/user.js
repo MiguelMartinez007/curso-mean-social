@@ -14,6 +14,7 @@ api.get('/home', userCotrollers.home);
 /* Creamos una nueva ruta */
 api.get('/pruebas', userCotrollers.pruebas);
 api.post('/register', userCotrollers.saveUser);
+api.post('/login', userCotrollers.loginUser);
 
 /* Finalmente exportamos api */
 module.exports = api;
