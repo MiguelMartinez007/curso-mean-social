@@ -15,4 +15,4 @@ var userSchema = Schema({
 
 // Exportamos
 /* En esta parte se exporta el modelo en formato json para que este diponible en cualquier sitio */
-modules.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);
