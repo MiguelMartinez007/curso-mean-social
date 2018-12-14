@@ -88,9 +88,17 @@ function loginUser(req, res) {
             bcrypt.compare(password, user.password, (err, check) => {
                 /* Se comprueba que si son iguales las contrasenas */
                 if (check) {
-                    user.password = undefined; /* Nos permite quitar un elemento */
-                    // Devolber datos de usuario
-                    return res.status(200).send({ user });
+
+                    if (params.gettoken) {
+                        // Devolver token
+                        // Generar token
+
+                    } else {
+                        // Devolver datos del usuario
+                        user.password = undefined; /* Nos permite quitar un elemento */
+                        // Devolber datos de usuario
+                        return res.status(200).send({ user });
+                    }
                 } else { /* En caso de que no sean iguales las contrasenas se debuelve el siguient mensaje */
                     return res.status(404).send({ message: 'El usuario no se ha podido identificar' });
                 }
