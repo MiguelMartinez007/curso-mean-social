@@ -50,6 +50,7 @@ function saveUser(req, res) {
                         if (err) return res.status(500).send({ message: 'Error al guardar el usuario' });
                         /* Se ejecuta en caso de que todo sea exitoso */
                         if (userStored) {
+                            userStored.password = undefined;
                             res.status(200).send({ user: userStored }); /* Se debuelve un objeto con el objeto de usuario */
                         } else {
                             /* en caos de que el userStored este mal */
@@ -87,6 +88,7 @@ function loginUser(req, res) {
             bcrypt.compare(password, user.password, (err, check) => {
                 /* Se comprueba que si son iguales las contrasenas */
                 if (check) {
+                    user.password = undefined; /* Nos permite quitar un elemento */
                     // Devolber datos de usuario
                     return res.status(200).send({ user });
                 } else { /* En caso de que no sean iguales las contrasenas se debuelve el siguient mensaje */
