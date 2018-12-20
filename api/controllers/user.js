@@ -4,6 +4,8 @@ var bcrypt = require('bcrypt-nodejs'); /* Nos permitira sifrar las contrasenas *
 
 /* Se importa el modelo de usuario */
 var User = require('../models/user');
+/* Importamos el servicio que genera el tocken para encriptar los datos del usuario */
+var jwt = require('../services/jwt');
 
 // rutas
 function home(req, res) {
@@ -90,8 +92,10 @@ function loginUser(req, res) {
                 if (check) {
 
                     if (params.gettoken) {
-                        // Devolver token
-                        // Generar token
+                        // Generar y devolver el token
+                        return res.status(200).send({
+                            tocken: jwt.createToken(user)
+                        });
 
                     } else {
                         // Devolver datos del usuario
