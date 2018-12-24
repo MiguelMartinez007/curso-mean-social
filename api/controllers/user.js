@@ -113,6 +113,21 @@ function loginUser(req, res) {
     })
 };
 
+/* Coseguir datos de un usuario */
+function getUsers(req, res) {
+    /* Cuando llegan datos por medio de get se utiliza params y cuando se hace por medio de post se utiliza bdy */
+    var userId = req.params.id;
+
+    User.findById(userId, (err, user) => {
+        /* Si surge un error */
+        if (err) return res.status(500).send({ message: 'Error en la petición' });
+        /* Si el usuario no nos llega */
+        if (!user) return res.status(404).send({ message: 'El usuario no existe' });
+        /* Devuelve los datos del usuari en caso de que exista */
+        return res.status(200).send({ user });
+    });
+}
+
 /* Se exportan los metodoes en formato json */
 module.exports = {
     /* Mensaje */
@@ -122,5 +137,7 @@ module.exports = {
     /* Registra usuario */
     saveUser,
     /* Accede usuario */
-    loginUser
+    loginUser,
+    /* Datos de un usuario */
+    getUsers
 };

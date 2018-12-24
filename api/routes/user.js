@@ -16,6 +16,7 @@ api.get('/home', userCotrollers.home);
 api.get('/pruebas', md_auth.ensureAuth, userCotrollers.pruebas);
 api.post('/register', userCotrollers.saveUser);
 api.post('/login', userCotrollers.loginUser);
+api.get('/user/:id', md_auth.ensureAuth, userCotrollers.getUsers);
 
 /* Finalmente exportamos api */
 module.exports = api;
