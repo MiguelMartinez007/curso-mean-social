@@ -4,6 +4,8 @@ var bcrypt = require('bcrypt-nodejs'); /* Nos permitira sifrar las contrasenas *
 
 /* Se importa el modelo de usuario */
 var User = require('../models/user');
+/* Importamos el servicio que genera el tocken para encriptar los datos del usuario */
+var jwt = require('../services/jwt');
 
 // rutas
 function home(req, res) {
@@ -88,9 +90,19 @@ function loginUser(req, res) {
             bcrypt.compare(password, user.password, (err, check) => {
                 /* Se comprueba que si son iguales las contrasenas */
                 if (check) {
-                    user.password = undefined; /* Nos permite quitar un elemento */
-                    // Devolber datos de usuario
-                    return res.status(200).send({ user });
+
+                    if (params.gettoken) {
+                        // Generar y devolver el token
+                        return res.status(200).send({
+                            tocken: jwt.createToken(user)
+                        });
+
+                    } else {
+                        // Devolver datos del usuario
+                        user.password = undefined; /* Nos permite quitar un elemento */
+                        // Devolber datos de usuario
+                        return res.status(200).send({ user });
+                    }
                 } else { /* En caso de que no sean iguales las contrasenas se debuelve el siguient mensaje */
                     return res.status(404).send({ message: 'El usuario no se ha podido identificar' });
                 }
@@ -101,6 +113,21 @@ function loginUser(req, res) {
     })
 };
 
+/* Coseguir datos de un usuario */
+function getUsers(req, res) {
+    /* Cuando llegan datos por medio de get se utiliza params y cuando se hace por medio de post se utiliza bdy */
+    var userId = req.params.id;
+
+    User.findById(userId, (err, user) => {
+        /* Si surge un error */
+        if (err) return res.status(500).send({ message: 'Error en la petición' });
+        /* Si el usuario no nos llega */
+        if (!user) return res.status(404).send({ message: 'El usuario no existe' });
+        /* Devuelve los datos del usuari en caso de que exista */
+        return res.status(200).send({ user });
+    });
+}
+
 /* Se exportan los metodoes en formato json */
 module.exports = {
     /* Mensaje */
@@ -110,5 +137,7 @@ module.exports = {
     /* Registra usuario */
     saveUser,
     /* Accede usuario */
-    loginUser
+    loginUser,
+    /* Datos de un usuario */
+    getUsers
 };
