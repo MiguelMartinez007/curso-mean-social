@@ -6,6 +6,8 @@ var bcrypt = require('bcrypt-nodejs'); /* Nos permitira sifrar las contrasenas *
 var User = require('../models/user');
 /* Importamos el servicio que genera el tocken para encriptar los datos del usuario */
 var jwt = require('../services/jwt');
+/* Cargamos la libreria de mongoose paginated */
+var mongoosePaginate = require('mongoose-pagination');
 
 // rutas
 function home(req, res) {
@@ -114,7 +116,7 @@ function loginUser(req, res) {
 };
 
 /* Coseguir datos de un usuario */
-function getUsers(req, res) {
+function getUser(req, res) {
     /* Cuando llegan datos por medio de get se utiliza params y cuando se hace por medio de post se utiliza bdy */
     var userId = req.params.id;
 
@@ -128,6 +130,76 @@ function getUsers(req, res) {
     });
 }
 
+/* Devuelve datos de usuarios paginados */
+function getUsers(req, res) {
+    var identity_user_id = req.user.sub; /* Se obtiene el id del usuario logueado */
+
+    var page = 1;
+    /* Comprobamos que nos llega por la url la pagina */
+    if(req.params.page){
+        /* Si existe un valor de page en los parametros entonces se cambia el valor de la vatiable page por el valor de los parametros resividos */
+        page = req.params.page;
+    }
+
+    var itemsPerPage = 5; /* Va a ver 5 usuarios por pagina */
+    User.find().sort('_id').paginate(page, itemsPerPage, (err, users, total) => {
+        /* Si surge un error */
+        if (err) return res.status(500).send({ message: 'Error en la petición' });
+        /* Si el usuario no nos llega */
+        if (!users) return res.status(404).send({ message: 'No hay usuarios disponibles' });
+        /* Devuelve todos los usuarios */
+        return res.status(200).send({
+            users,
+            total, /* Total de registros */
+            pages: Math.ceil(total/itemsPerPage) /* Esto nos traera el total de paginas que se crearon */
+        });
+    });
+}
+
+
+/* Actualizar los datos de un usuario */
+function updateUser(req, res) {
+    var userId = req.params.id;
+
+    var update = req.body; /* Se toman los nuevos datos */
+    /* Se elimina la propiedad password de la variable update */
+    delete update.password;
+
+    if(userId != req.user.sub){
+        return res.status(500).send({message: 'No tienes permiso para actualizar los datos del usuario'});
+    }
+
+    /* Se manda una funcion calbak al servidor de Mongoose para que actualize los datos del usuario especificado con los datos nuevos, esto debuelve un objeto con los datos originales del usuario, y en caso de que se quiera obtener el nuevo objeto con los datos actualizados se escribe la siguiente instruccion */
+    /* Instruccion: ,{new: true}, */
+    User.findByIdAndUpdate(userId, update, {new:true}, (err, userUpdate) => {
+        /* Si surge un error */
+        if (err) return res.status(500).send({ message: 'Error en la petición' });
+        /* Nos devuelve el usuario con los datos anteriores, en caso de que no debuelba nada se muestra el siguiente error */
+        if(!userUpdate) return res.status(404).send({message: 'No se ha podido actualizar el usuario'});
+
+        return res.status(200).send({
+            user: userUpdate
+        });
+    });
+}
+
+/* Subir archivos de imagen avatar de usuario */
+function uploadImage(req, res) {
+    var userId = req.params.id;
+
+    if(userId != req.user.sub){
+        return res.status(500).send({message: 'No tienes permiso para actualizar los datos del usuario'});
+    }
+
+    /* Si estamos enviando algun fichero */
+    if(req.files){
+        var file_path = req.files.image.path; /* Se toma la direccion del fichero */
+        console.log(file_path);
+        
+        var file_split = file.path.split('\\'); /* Se toma el nombre del archivo */
+    }
+}
+
 /* Se exportan los metodoes en formato json */
 module.exports = {
     /* Mensaje */
@@ -139,5 +211,11 @@ module.exports = {
     /* Accede usuario */
     loginUser,
     /* Datos de un usuario */
-    getUsers
+    getUser,
+    /* Datos de usuarios */
+    getUsers,
+    /* Actualizar usuario */
+    updateUser,
+    /* Sube archivo imagen del usuario */
+    uploadImage
 };
