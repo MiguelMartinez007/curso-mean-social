@@ -4,13 +4,19 @@ var bcrypt = require('bcrypt-nodejs'); /* Nos permitira sifrar las contrasenas *
 
 /* Se importa el modelo de usuario */
 var User = require('../models/user');
+/* Se carga el modelo follow */
+var Follow = require('../models/follow');
 /* Importamos el servicio que genera el tocken para encriptar los datos del usuario */
 var jwt = require('../services/jwt');
 /* Cargamos la libreria de mongoose paginated */
 var mongoosePaginate = require('mongoose-pagination');
+/* Libreria que nos permite trabajar con archivos */
+var fs = require('fs'); /* file system de node */
+/* Libreris que nos permite trabajar con rutas del sistema de ficheros */
+var path = require('path');
 
 // rutas
-function home(req, res) {
+function home(req, sres) {
     console.log(req.body); /* Se hace una impresion del objeto json */
 
     res.status(200).send({
@@ -125,8 +131,13 @@ function getUser(req, res) {
         if (err) return res.status(500).send({ message: 'Error en la petición' });
         /* Si el usuario no nos llega */
         if (!user) return res.status(404).send({ message: 'El usuario no existe' });
-        /* Devuelve los datos del usuari en caso de que exista */
-        return res.status(200).send({ user });
+
+        /* Nos saca solo un registro */
+        Follow.findOne({ 'user': req.user.sub, 'followed': userId }).exec((err, follow) => {
+            if (err) return res.status(500).send({ message: 'Error al comprobar el seguimiento' });
+            return res.status(200).send({ user, follow });
+        });
+        // return res.status(200).send({ user });
     });
 }
 
@@ -136,7 +147,7 @@ function getUsers(req, res) {
 
     var page = 1;
     /* Comprobamos que nos llega por la url la pagina */
-    if(req.params.page){
+    if (req.params.page) {
         /* Si existe un valor de page en los parametros entonces se cambia el valor de la vatiable page por el valor de los parametros resividos */
         page = req.params.page;
     }
@@ -150,8 +161,9 @@ function getUsers(req, res) {
         /* Devuelve todos los usuarios */
         return res.status(200).send({
             users,
-            total, /* Total de registros */
-            pages: Math.ceil(total/itemsPerPage) /* Esto nos traera el total de paginas que se crearon */
+            total,
+            /* Total de registros */
+            pages: Math.ceil(total / itemsPerPage) /* Esto nos traera el total de paginas que se crearon */
         });
     });
 }
@@ -165,17 +177,17 @@ function updateUser(req, res) {
     /* Se elimina la propiedad password de la variable update */
     delete update.password;
 
-    if(userId != req.user.sub){
-        return res.status(500).send({message: 'No tienes permiso para actualizar los datos del usuario'});
+    if (userId != req.user.sub) {
+        return res.status(500).send({ message: 'No tienes permiso para actualizar los datos del usuario' });
     }
 
     /* Se manda una funcion calbak al servidor de Mongoose para que actualize los datos del usuario especificado con los datos nuevos, esto debuelve un objeto con los datos originales del usuario, y en caso de que se quiera obtener el nuevo objeto con los datos actualizados se escribe la siguiente instruccion */
     /* Instruccion: ,{new: true}, */
-    User.findByIdAndUpdate(userId, update, {new:true}, (err, userUpdate) => {
+    User.findByIdAndUpdate(userId, update, { new: true }, (err, userUpdate) => {
         /* Si surge un error */
         if (err) return res.status(500).send({ message: 'Error en la petición' });
         /* Nos devuelve el usuario con los datos anteriores, en caso de que no debuelba nada se muestra el siguiente error */
-        if(!userUpdate) return res.status(404).send({message: 'No se ha podido actualizar el usuario'});
+        if (!userUpdate) return res.status(404).send({ message: 'No se ha podido actualizar el usuario' });
 
         return res.status(200).send({
             user: userUpdate
@@ -187,17 +199,82 @@ function updateUser(req, res) {
 function uploadImage(req, res) {
     var userId = req.params.id;
 
-    if(userId != req.user.sub){
-        return res.status(500).send({message: 'No tienes permiso para actualizar los datos del usuario'});
+    /* Si estamos enviando algun fichero */
+    if (req.files) {
+        var file_path = req.files.image.path; /* Se toma la direccion del fichero con un nombre aleatorio */
+        console.log(file_path);
+
+        /* Se toma la direccion del archivo y se divide por directorios */
+        var file_split = file_path.split('/');
+        console.log(file_split);
+
+        /* Sacamos el nombre del archivo */
+        var file_name = file_split[2];
+        console.log(file_name);
+
+        /* Sacamos la extencion del archivo */
+        var ext_split = file_name.split('.');
+        var file_ext = ext_split[1];
+        console.log(file_ext);
+
+        if (userId != req.user.sub) {
+            /* Se llama a la funcion que elimina el archivo del servidor */
+            return removeFilesOfUploads(res, file_path, 'No tienes permiso para actualizar los datos del usuario');
+        }
+
+        /* Comprobando que las extenciones sean correctas */
+        if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg' || file_ext == 'gif') {
+            /* Actualizar documento de usuario logueado */
+            User.findByIdAndUpdate(userId, { image: file_name }, { new: true }, (err, userUpdate) => {
+                /* Si surge un error */
+                if (err) return res.status(500).send({ message: 'Error en la petición' });
+                /* Nos devuelve el usuario con los datos anteriores, en caso de que no debuelba nada se muestra el siguiente error */
+                if (!userUpdate) return res.status(404).send({ message: 'No se ha podido actualizar el usuario' });
+
+                return res.status(200).send({
+                    user: userUpdate
+                });
+            });
+        } else {
+            /* Se llama a la funcion que elimina el archivo del servidor */
+            return removeFilesOfUploads(res, file_path, 'Extención no valida');
+        }
+
+    } else {
+        return res.status(200).send({ message: 'No se han subido imagenes' });
+    }
+}
+
+function removeFilesOfUploads(res, file_path, mss) {
+    /* Se eliminara directamente el archivo que se selecciono y subio */
+    fs.unlink(file_path, (err) => {
+        if (err) return res.status(200).send({ message: mss });
+    }); /* Con esto se elimina el archivo */
+
+    return res.status(500).send({ message: mss });
+}
+
+/* Devolver las imagenes del usuario */
+function getImageFile(req, res) {
+    var imageFile = req.params.imageFile; /* Nombre del fichero */
+    var pathFile = './uploads/users/' + imageFile; /* Agregamos la direccion completa de la ubicacion del archivo */
+
+    var userId = req.params.id;
+
+    if (userId != req.user.sub) {
+        return res.status(500).send({ message: 'No tienes permiso para consultar la imagen' });
     }
 
-    /* Si estamos enviando algun fichero */
-    if(req.files){
-        var file_path = req.files.image.path; /* Se toma la direccion del fichero */
-        console.log(file_path);
-        
-        var file_split = file.path.split('\\'); /* Se toma el nombre del archivo */
-    }
+    /* Comprobando de que existe el archivo */
+    fs.exists(pathFile, (exists) => {
+        /* Si existe el archivo */
+        if (exists) {
+            /* Nos devuelve el archivo en crudo */
+            res.sendFile(path.resolve(pathFile));
+        } else {
+            res.status(200).send({ message: 'No existe la imagen' });
+        }
+    });
 }
 
 /* Se exportan los metodoes en formato json */
@@ -217,5 +294,7 @@ module.exports = {
     /* Actualizar usuario */
     updateUser,
     /* Sube archivo imagen del usuario */
-    uploadImage
+    uploadImage,
+    /* Devuelve la imagen del usuario */
+    getImageFile
 };
