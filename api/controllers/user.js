@@ -203,14 +203,57 @@ function getUsers(req, res) {
         if (err) return res.status(500).send({ message: 'Error en la petición' });
         /* Si el usuario no nos llega */
         if (!users) return res.status(404).send({ message: 'No hay usuarios disponibles' });
-        /* Devuelve todos los usuarios */
-        return res.status(200).send({
-            users,
-            total,
-            /* Total de registros */
-            pages: Math.ceil(total / itemsPerPage) /* Esto nos traera el total de paginas que se crearon */
+
+        followUserIds(identity_user_id).then((value) => {
+            /* Devuelve todos los usuarios */
+            return res.status(200).send({
+                users,
+                usersFollowing: value.following,
+                usersFollowMe: value.followed,
+                total,
+                /* Total de registros */
+                pages: Math.ceil(total / itemsPerPage) /* Esto nos traera el total de paginas que se crearon */
+            });
         });
+
+        // /* Devuelve todos los usuarios */
+        // return res.status(200).send({
+        //     users,
+        //     total,
+        //     /* Total de registros */
+        //     pages: Math.ceil(total / itemsPerPage) /* Esto nos traera el total de paginas que se crearon */
+        // });
     });
+}
+
+async function followUserIds(userId){
+    // Con la funcion select se elijen cuales campos se quiere sacar de la base de datos
+    var following = await Follow.find({"user":userId}).select({'_id':0,'__v':0,'user':0}).exec((err, follows) => {
+        return follows;
+    });
+
+    var followed = await Follow.find({"followed":userId}).select({'_id':0,'__v':0,'followed':0}).exec((err, follows) => {
+        return follows;
+    });
+
+    // Procesar followin ids
+    var followingClean = [];
+
+    following.forEach((follow)=>{
+        followingClean.push(follow.followed);
+    });
+
+    // Procesar followed ids
+    var followedClean = [];
+
+    followed.forEach((follow)=>{
+        followedClean.push(follow.user);
+    });
+
+    return {
+        following: followingClean,
+        followed: followedClean
+    }
 }
 
 
