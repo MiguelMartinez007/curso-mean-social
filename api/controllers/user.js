@@ -204,17 +204,7 @@ function getUsers(req, res) {
         /* Si el usuario no nos llega */
         if (!users) return res.status(404).send({ message: 'No hay usuarios disponibles' });
 
-        followUserIds(identity_user_id).then((value) => {
-            /* Devuelve todos los usuarios */
-            return res.status(200).send({
-                users,
-                usersFollowing: value.following,
-                usersFollowMe: value.followed,
-                total,
-                /* Total de registros */
-                pages: Math.ceil(total / itemsPerPage) /* Esto nos traera el total de paginas que se crearon */
-            });
-        });
+        followUserIds(identity_user_id, users, total, itemsPerPage, res);
 
         // /* Devuelve todos los usuarios */
         // return res.status(200).send({
@@ -226,34 +216,70 @@ function getUsers(req, res) {
     });
 }
 
-async function followUserIds(userId){
+// async function followUserIds(userId){
+//     // Con la funcion select se elijen cuales campos se quiere sacar de la base de datos
+//     var following = await Follow.find({"user":userId}).select({'_id':0,'__v':0,'user':0}).exec((err, follows) => {
+//         return follows;
+//     });
+
+//     var followed = await Follow.find({"followed":userId}).select({'_id':0,'__v':0,'followed':0}).exec((err, follows) => {
+//         return follows;
+//     });
+
+//     // Procesar followin ids
+//     var followingClean = [];
+
+//     following.forEach((follow)=>{
+//         followingClean.push(follow.followed);
+//     });
+
+//     // Procesar followed ids
+//     var followedClean = [];
+
+//     followed.forEach((follow)=>{
+//         followedClean.push(follow.user);
+//     });
+
+//     return {
+//         following: followingClean,
+//         followed: followedClean
+//     }
+// }
+
+function followUserIds(userId, users, total, itemsPerPage, res){
     // Con la funcion select se elijen cuales campos se quiere sacar de la base de datos
-    var following = await Follow.find({"user":userId}).select({'_id':0,'__v':0,'user':0}).exec((err, follows) => {
-        return follows;
+    Follow.find({"user":userId}).select({'_id':0,'__v':0,'user':0}).exec((err, followeds) => {
+        if(err) handleError(err);
+
+        // Procesar followin ids
+        var followingClean = [];
+
+        followeds.forEach((follow)=>{
+            followingClean.push(follow.followed);
+        });
+
+
+        Follow.find({"followed":userId}).select({'_id':0,'__v':0,'followed':0}).exec((err, follows) => {
+            if(err) handleError(err);
+
+            // Procesar followed ids
+            var followedClean = [];
+
+            follows.forEach((follow)=>{
+                followedClean.push(follow.user);
+            });
+
+            /* Devuelve todos los usuarios */
+            return res.status(200).send({
+                users,
+                usersFollowing: followingClean,
+                usersFollowMe: followedClean,
+                total,
+                /* Total de registros */
+                pages: Math.ceil(total / itemsPerPage) /* Esto nos traera el total de paginas que se crearon */
+            });
+        });
     });
-
-    var followed = await Follow.find({"followed":userId}).select({'_id':0,'__v':0,'followed':0}).exec((err, follows) => {
-        return follows;
-    });
-
-    // Procesar followin ids
-    var followingClean = [];
-
-    following.forEach((follow)=>{
-        followingClean.push(follow.followed);
-    });
-
-    // Procesar followed ids
-    var followedClean = [];
-
-    followed.forEach((follow)=>{
-        followedClean.push(follow.user);
-    });
-
-    return {
-        following: followingClean,
-        followed: followedClean
-    }
 }
 
 
