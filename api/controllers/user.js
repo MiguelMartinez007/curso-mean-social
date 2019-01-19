@@ -132,8 +132,8 @@ function getUser(req, res) {
         /* Si el usuario no nos llega */
         if (!user) return res.status(404).send({ message: 'El usuario no existe' });
 
-        console.log(req.params.id);
-        console.log(req.user.sub);
+        // console.log(req.params.id);
+        // console.log(req.user.sub);
 
         followThisUser(req.user.sub, userId, res);
 
