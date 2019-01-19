@@ -132,6 +132,9 @@ function getUser(req, res) {
         /* Si el usuario no nos llega */
         if (!user) return res.status(404).send({ message: 'El usuario no existe' });
 
+        console.log(req.params.id);
+        console.log(req.user.sub);
+
         /* Nos saca solo un registro */
         Follow.findOne({ 'user': req.user.sub, 'followed': userId }).exec((err, follow) => {
             if (err) return res.status(500).send({ message: 'Error al comprobar el seguimiento' });
