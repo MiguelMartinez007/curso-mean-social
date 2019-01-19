@@ -135,7 +135,7 @@ function getUser(req, res) {
         // console.log(req.params.id);
         // console.log(req.user.sub);
 
-        followThisUser(req.user.sub, userId, res);
+        followThisUser(req.user.sub, userId, res, user);
 
         // followThisUser(req.user.sub, userId).then((value) => {
         //     return res.status(200).send({ user, value });
@@ -170,13 +170,18 @@ function getUser(req, res) {
 // }
 
 // Esta funcion es sincrona, lo que quiere decir que se ejecuta instruccion por instruccion de forma ordenada
-function followThisUser(identity_user_id, userId, res){
+function followThisUser(identity_user_id, userId, res, user){
     // Se conbierte en una llamada sincrona
     Follow.findOne({ 'user': identity_user_id, 'followed': userId }).exec((err, following) => {
         if(err) handleError(err);
+        user.password = undefined;
         Follow.findOne({ 'user': userId, 'followed': identity_user_id }).exec((err, followed) => {
             if(err) handleError(err);
-            return res.status(200).send({ following, followed });
+            return res.status(200).send({
+                user,
+                following,
+                followed
+            });
         });
     });
 }
