@@ -135,13 +135,35 @@ function getUser(req, res) {
         console.log(req.params.id);
         console.log(req.user.sub);
 
-        /* Nos saca solo un registro */
-        Follow.findOne({ 'user': req.user.sub, 'followed': userId }).exec((err, follow) => {
-            if (err) return res.status(500).send({ message: 'Error al comprobar el seguimiento' });
-            return res.status(200).send({ user, follow });
+        followThisUser(req.user.sub, userId).then((value) => {
+            return res.status(200).send({ user, value });
         });
+
+        /* Nos saca solo un registro */
+        // Follow.findOne({ 'user': req.user.sub, 'followed': userId }).exec((err, follow) => {
+        //     if (err) return res.status(500).send({ message: 'Error al comprobar el seguimiento' });
+        //     return res.status(200).send({ user, follow });
+        // });
         // return res.status(200).send({ user });
     });
+}
+
+// Esta funcion es sincrona, lo que quiere decir que se ejecuta instruccion por instruccion de forma ordenada
+async function followThisUser(identity_user_id, userId){
+    // Se conbierte en una llamada sincrona
+    var following = await Follow.findOne({ 'user': identity_user_id, 'followed': userId }).exec((err, follow) => {
+        if(err) handleError(err);
+        return follow;
+    });
+    var followed = await Follow.findOne({ 'user': userId, 'followed': identity_user_id }).exec((err, follow) => {
+        if(err) handleError(err);
+        return follow;
+    });
+
+    return {
+        following: following,
+        followed: followed
+    }
 }
 
 /* Devuelve datos de usuarios paginados */
