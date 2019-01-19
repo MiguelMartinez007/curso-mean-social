@@ -135,9 +135,11 @@ function getUser(req, res) {
         console.log(req.params.id);
         console.log(req.user.sub);
 
-        followThisUser(req.user.sub, userId).then((value) => {
-            return res.status(200).send({ user, value });
-        });
+        followThisUser(req.user.sub, userId, res);
+
+        // followThisUser(req.user.sub, userId).then((value) => {
+        //     return res.status(200).send({ user, value });
+        // });
 
         /* Nos saca solo un registro */
         // Follow.findOne({ 'user': req.user.sub, 'followed': userId }).exec((err, follow) => {
@@ -148,22 +150,35 @@ function getUser(req, res) {
     });
 }
 
-// Esta funcion es sincrona, lo que quiere decir que se ejecuta instruccion por instruccion de forma ordenada
-async function followThisUser(identity_user_id, userId){
-    // Se conbierte en una llamada sincrona
-    var following = await Follow.findOne({ 'user': identity_user_id, 'followed': userId }).exec((err, follow) => {
-        if(err) handleError(err);
-        return follow;
-    });
-    var followed = await Follow.findOne({ 'user': userId, 'followed': identity_user_id }).exec((err, follow) => {
-        if(err) handleError(err);
-        return follow;
-    });
 
-    return {
-        following: following,
-        followed: followed
-    }
+// // Esta funcion es sincrona, lo que quiere decir que se ejecuta instruccion por instruccion de forma ordenada
+// async function followThisUser(identity_user_id, userId){
+//     // Se conbierte en una llamada sincrona
+//     var following = await Follow.findOne({ 'user': identity_user_id, 'followed': userId }).exec((err, follow) => {
+//         if(err) handleError(err);
+//         return follow;
+//     });
+//     var followed = await Follow.findOne({ 'user': userId, 'followed': identity_user_id }).exec((err, follow) => {
+//         if(err) handleError(err);
+//         return follow;
+//     });
+
+//     return {
+//         following: following,
+//         followed: followed
+//     }
+// }
+
+// Esta funcion es sincrona, lo que quiere decir que se ejecuta instruccion por instruccion de forma ordenada
+function followThisUser(identity_user_id, userId, res){
+    // Se conbierte en una llamada sincrona
+    Follow.findOne({ 'user': identity_user_id, 'followed': userId }).exec((err, following) => {
+        if(err) handleError(err);
+        Follow.findOne({ 'user': userId, 'followed': identity_user_id }).exec((err, followed) => {
+            if(err) handleError(err);
+            return res.status(200).send({ following, followed });
+        });
+    });
 }
 
 /* Devuelve datos de usuarios paginados */
