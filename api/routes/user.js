@@ -21,6 +21,7 @@ api.post('/register', userCotrollers.saveUser);
 api.post('/login', userCotrollers.loginUser);
 api.get('/user/:id', md_auth.ensureAuth, userCotrollers.getUser);
 api.get('/users/:page?', md_auth.ensureAuth, userCotrollers.getUsers);
+api.get('/counters/:id?', md_auth.ensureAuth, userCotrollers.getCounters);
 api.put('/update-user/:id', md_auth.ensureAuth, userCotrollers.updateUser);
 api.post('/upload-image-user/:id', [md_auth.ensureAuth, md_upload], userCotrollers.uploadImage);
 api.post('/get-image-user/:id/:imageFile', md_auth.ensureAuth, userCotrollers.getImageFile);

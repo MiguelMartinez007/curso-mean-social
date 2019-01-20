@@ -282,6 +282,35 @@ function followUserIds(userId, users, total, itemsPerPage, res){
     });
 }
 
+// Nos devolvera el contador de quien nos sigue, cuanta gente estamos siguiendo, cuntas publicaciones tenemos, etc.
+function getCounters(req, res){
+    var userId = req.user.sub;
+    if(req.params.id){
+        userId = req.params.id;
+    }
+
+    getCountFollow(userId).then((value) => {
+        return res.status(200).send({value});
+    });
+}
+
+async function getCountFollow(userId){
+    var following = await Follow.count({"user":userId}).exec((err, count) => {
+        if(err) return handleError(err);
+
+        return count;
+    });
+    var followed = await Follow.count({"followed":userId}).exec((err, count) => {
+        if(err) return handleError(err);
+
+        return count;
+    });
+
+    return {
+        following: following,
+        followed: followed
+    }
+}
 
 /* Actualizar los datos de un usuario */
 function updateUser(req, res) {
@@ -405,6 +434,8 @@ module.exports = {
     getUser,
     /* Datos de usuarios */
     getUsers,
+    // Metodo para el conteo de seguidores y seguidos, entre otras cosas
+    getCounters,
     /* Actualizar usuario */
     updateUser,
     /* Sube archivo imagen del usuario */
