@@ -43,7 +43,7 @@ function savePublication(req, res){
 // Se utiliza en el timeline de la aplicacion
 function getPublications(req, res){
     var page = 1;
-    if(releaseEvents.params.page){
+    if(req.params.page){
         page = req.params.page;
     }
 
@@ -52,12 +52,35 @@ function getPublications(req, res){
     // Con populate se cargan los datos del objeto al que esta relacionado la propiedad que se pasa
     Follow.find({user: req.user.sub}).populate('followed').exec((err, follows) => {
         if(err) return res.status(500).send({message:'Error al devolver el seguimiento'});
+        
         // Se crea un arra que devuelve los usuarios que estamos siguiendo
+        var followsClean = [];
+
+        follows.forEach((follow) => {
+            // Se esta añidiendo un objeto completo
+            followsClean.push(follow.followed);
+        });
+
+        Publication.find({user: {"$in": followsClean}}).sort('created_at').populate('user').paginate(page, itemsPerPage, (err, publications, total) => {
+            if(err) return res.status(500).send({message:'Error al devolver publicaciones'});
+
+            if(!publications) return res.status(404).send({message:'No hay publicaciones'});
+
+            return res.status(200).send({
+                total_items: total,
+                pages: Math.ceil(total/itemsPerPage),
+                page,
+                publications
+            });
+        });
+        
     });
 }
 
 module.exports = {
     probando,
     // Guardar una publicacion nueva
-    savePublication
+    savePublication,
+    // Carga una lista de publicaciones de usuarios que estamos siguiendo
+    getPublications
 }
