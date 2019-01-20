@@ -39,6 +39,23 @@ function savePublication(req, res){
     })
 }
 
+// Nos permite listar las publicaciones de los usuarios que estamos siguiendo
+// Se utiliza en el timeline de la aplicacion
+function getPublications(req, res){
+    var page = 1;
+    if(releaseEvents.params.page){
+        page = req.params.page;
+    }
+
+    var itemsPerPage = 4;
+
+    // Con populate se cargan los datos del objeto al que esta relacionado la propiedad que se pasa
+    Follow.find({user: req.user.sub}).populate('followed').exec((err, follows) => {
+        if(err) return res.status(500).send({message:'Error al debolver el seguimiento'});
+        // Se crea un arra que devuelve los usuarios que estamos siguiendo
+    });
+}
+
 module.exports = {
     probando,
     // Guardar una publicacion nueva
