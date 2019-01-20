@@ -289,27 +289,43 @@ function getCounters(req, res){
         userId = req.params.id;
     }
 
-    getCountFollow(userId).then((value) => {
-        return res.status(200).send({value});
-    });
+    // getCountFollow(userId).then((value, res) => {
+    //     return res.status(200).send({value});
+    // });
+    getCountFollow(userId, res);
 }
 
-async function getCountFollow(userId){
-    var following = await Follow.count({"user":userId}).exec((err, count) => {
+// async function getCountFollow(userId){
+//     var following = await Follow.count({"user":userId}).exec((err, count) => {
+//         if(err) return handleError(err);
+
+//         return count;
+//     });
+//     var followed = await Follow.count({"followed":userId}).exec((err, count) => {
+//         if(err) return handleError(err);
+
+//         return count;
+//     });
+
+//     return {
+//         following: following,
+//         followed: followed
+//     }
+// }
+
+function getCountFollow(userId, res){
+    Follow.count({"user":userId}).exec((err, We) => {
         if(err) return handleError(err);
 
-        return count;
+        Follow.count({"followed":userId}).exec((err, Me) => {
+            if(err) return handleError(err);
+            
+            return res.status(200).send({
+                following: Me,
+                followed: We
+            });
+        });
     });
-    var followed = await Follow.count({"followed":userId}).exec((err, count) => {
-        if(err) return handleError(err);
-
-        return count;
-    });
-
-    return {
-        following: following,
-        followed: followed
-    }
 }
 
 /* Actualizar los datos de un usuario */
