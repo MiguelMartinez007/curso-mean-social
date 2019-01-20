@@ -61,6 +61,10 @@ function getPublications(req, res){
             followsClean.push(follow.followed);
         });
 
+        // En esta parte: {"$in": followsClean, se crea el codigo para filtrar las publicaciones de los usuarios que coinsidan con el arreglo
+        // followsClean. Se compara el id de user en la parte de publication, despues de agrega un sort para ordenar las publicaciones de 
+        // la mas resiente a la mas antigua, despues de crea un populate para extraer todo el objeto de cada publicacion, y finalmente se pagina
+        // para tener la informacion en paginas y cargarla dinamicamente en el front
         Publication.find({user: {"$in": followsClean}}).sort('created_at').populate('user').paginate(page, itemsPerPage, (err, publications, total) => {
             if(err) return res.status(500).send({message:'Error al devolver publicaciones'});
 
