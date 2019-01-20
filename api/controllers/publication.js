@@ -51,7 +51,7 @@ function getPublications(req, res){
 
     // Con populate se cargan los datos del objeto al que esta relacionado la propiedad que se pasa
     Follow.find({user: req.user.sub}).populate('followed').exec((err, follows) => {
-        if(err) return res.status(500).send({message:'Error al debolver el seguimiento'});
+        if(err) return res.status(500).send({message:'Error al devolver el seguimiento'});
         // Se crea un arra que devuelve los usuarios que estamos siguiendo
     });
 }
