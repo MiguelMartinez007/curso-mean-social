@@ -81,10 +81,25 @@ function getPublications(req, res){
     });
 }
 
+// Metodo para debolver una publicacion, nos da una publicacion en base a su id
+function getPublication(req, res) {
+    var publicationId = req.params.id;
+
+    Publication.findById(publicationId, (err, publication) => {
+        if(err) return res.status(500).send({message:'Error al devolver la publicacion'});
+
+        if(!publication) return res.status(404).send({message:'No existe la publicación'});
+
+        res.status(200).send({publication});
+    });
+}
+
 module.exports = {
     probando,
     // Guardar una publicacion nueva
     savePublication,
     // Carga una lista de publicaciones de usuarios que estamos siguiendo
-    getPublications
+    getPublications,
+    // Nos arroja una publicación buscada por su id
+    getPublication
 }
