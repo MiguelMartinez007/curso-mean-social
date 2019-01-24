@@ -108,6 +108,96 @@ function deletePublication(req, res) {
     });
 }
 
+/* Subir archivos de imagen avatar de la publicacion */
+function uploadImage(req, res) {
+    var publicationId = req.params.id;
+
+    /* Si estamos enviando algun fichero */
+    if (req.files) {
+        var file_path = req.files.image.path; /* Se toma la direccion del fichero con un nombre aleatorio */
+        console.log(file_path);
+
+        /* Se toma la direccion del archivo y se divide por directorios */
+        var file_split = file_path.split('\\');
+        console.log(file_split);
+
+        /* Sacamos el nombre del archivo */
+        var file_name = file_split[2];
+        console.log(file_name);
+
+        /* Sacamos la extencion del archivo */
+        var ext_split = file_name.split('\.');
+        var file_ext = ext_split[1];
+        console.log(file_ext);
+
+        // if (publicationId != req.user.sub) {
+        //     /* Se llama a la funcion que elimina el archivo del servidor */
+        //     return removeFilesOfUploads(res, file_path, 'No tienes permiso para actualizar los datos del usuario');
+        // }
+
+        /* Comprobando que las extenciones sean correctas */
+        if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'jpeg' || file_ext == 'gif') {
+            
+            Publication.findOne({'user':req.user.sub, '_id':publicationId}).exec((err, publication) => {
+                
+                if(publication){
+                    /* Actualizar documento de publicacion logueado */
+                    Publication.findByIdAndUpdate(publicationId, { file: file_name }, { new: true }, (err, publicationUpdate) => {
+                        /* Si surge un error */
+                        if (err) return res.status(500).send({ message: 'Error en la petición' });
+                        /* Nos devuelve el usuario con los datos anteriores, en caso de que no debuelba nada se muestra el siguiente error */
+                        if (!publicationUpdate) return res.status(404).send({ message: 'No se ha podido actualizar el usuario' });
+
+                        return res.status(200).send({
+                            publication: publicationUpdate
+                        });
+                    });
+                }else{
+                    return removeFilesOfUploads(res, file_path, 'No tienes permiso para actualizar esta publicación');
+                }
+            });
+        } else {
+            /* Se llama a la funcion que elimina el archivo del servidor */
+            return removeFilesOfUploads(res, file_path, 'Extención no valida');
+        }
+
+    } else {
+        return res.status(200).send({ message: 'No se han subido imagenes' });
+    }
+}
+
+function removeFilesOfUploads(res, file_path, mss) {
+    /* Se eliminara directamente el archivo que se selecciono y subio */
+    fs.unlink(file_path, (err) => {
+        if (err) return res.status(200).send({ message: mss });
+    }); /* Con esto se elimina el archivo */
+
+    return res.status(500).send({ message: mss });
+}
+
+/* Devolver las imagenes de la publicacion */
+function getImageFile(req, res) {
+    var imageFile = req.params.imageFile; /* Nombre del fichero */
+    var pathFile = './uploads/publications/' + imageFile; /* Agregamos la direccion completa de la ubicacion del archivo */
+
+    var userId = req.params.id;
+
+    if (userId != req.user.sub) {
+        return res.status(500).send({ message: 'No tienes permiso para consultar la imagen' });
+    }
+
+    /* Comprobando de que existe el archivo */
+    fs.exists(pathFile, (exists) => {
+        /* Si existe el archivo */
+        if (exists) {
+            /* Nos devuelve el archivo en crudo */
+            res.sendFile(path.resolve(pathFile));
+        } else {
+            res.status(200).send({ message: 'No existe la imagen' });
+        }
+    });
+}
+
 module.exports = {
     probando,
     // Guardar una publicacion nueva
@@ -117,5 +207,9 @@ module.exports = {
     // Nos arroja una publicación buscada por su id
     getPublication,
     // Funcion para eliminar una publicacion
-    deletePublication
+    deletePublication,
+    // Metodo para cargar una imagen a una publicacion nueva
+    uploadImage,
+    // Metodo para obtener la imagen de una publicacion
+    getImageFile
 }
