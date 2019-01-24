@@ -94,6 +94,20 @@ function getPublication(req, res) {
     });
 }
 
+// Funcion para eliminar una publicacion
+function deletePublication(req, res) {
+    var publicationId = req.params.id;
+
+    Publication.find({'user': req.user.sub, '_id': publicationId}).remove((err, publicationRemove)=> {
+        if(err) return res.status(500).send({message:'Error al borrar la publicacion'});
+
+        if(!publicationRemove) return res.status(404).send({message:'No se ha borrado la publicación'});
+
+        // res.status(200).send({publication: publicationRemove});
+        res.status(200).send({message: 'Publicación eliminada correctamente'});
+    });
+}
+
 module.exports = {
     probando,
     // Guardar una publicacion nueva
@@ -101,5 +115,7 @@ module.exports = {
     // Carga una lista de publicaciones de usuarios que estamos siguiendo
     getPublications,
     // Nos arroja una publicación buscada por su id
-    getPublication
+    getPublication,
+    // Funcion para eliminar una publicacion
+    deletePublication
 }
