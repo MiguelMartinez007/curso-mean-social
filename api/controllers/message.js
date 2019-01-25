@@ -32,9 +32,35 @@ function saveMessage(req, res) {
     });
 }
 
+// Metodo para listar los mensajes recibidos
+function getReceivedMessages(req, res) {
+    var userId = req.user.sub;
+
+    var page = 1;
+    if(req.params.page) page = req.params.page;
+
+    var itemsPerPage = 4;
+
+    // Al utilizar el populate, se le puede decir solamente cuales campos se quiere devolver: 'name surname _id nick image'
+    Message.find({receiver: userId}).populate('emitter', 'name surname _id nick image').paginate(page, itemsPerPage, (err, messages, total) => {
+        if (err) return res.status(500).send({message: 'Error en la petición'});
+        if (!messages) return res.status(404).send({message: 'No hay mensajes'});
+
+        // messages.emitter.password = undefined;
+
+        return res.status(200).send({
+            total: total,
+            pages: Math.ceil(total/itemsPerPage),
+            messages
+        });
+    });
+}
+
 module.exports = {
     // Metodo de prueba
     probando,
     // Metodo para enviar mensaje entre los usuarios
-    saveMessage
+    saveMessage,
+    // Lista los mensajes recibidos
+    getReceivedMessages
 }
