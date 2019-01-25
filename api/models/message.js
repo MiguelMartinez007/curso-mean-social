@@ -6,9 +6,10 @@ var Schema = mongoose.Schema; /* Esto nos permite definri un nuevo esquema */
 /* Se crea el esquema nuevo */
 var messagesSchema = Schema({
     text: String,
+    viewed: String,
     create_at: String,
-    user: { type: Schema.ObjectId, ref: 'User' },
-    followed: { type: Schema.ObjectId, ref: 'User' }
+    emitter: { type: Schema.ObjectId, ref: 'User' },
+    receiver: { type: Schema.ObjectId, ref: 'User' }
 });
 
 // Exportamos
