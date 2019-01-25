@@ -19,6 +19,15 @@ app.use(bodyParser.urlencoded({ extended: false })); /* Es un metodo que se ejec
 app.use(bodyParser.json()); /* Esto combertira la respuesta de la base de datos a un objeto json */
 
 // cors
+// configurar cabeceras http
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+ 
+    next();
+});
 
 // rutas
 /* Esta nos permite hacer midelwers, esta siempre se ejecuta antes de llegar a la accion del controlador 
