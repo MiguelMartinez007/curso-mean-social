@@ -94,6 +94,16 @@ function getUnviewedMessages(req, res) {
     })
 }
 
+// Actualizar los mensajes a vistos
+function setViewedMessages(req, res) {
+    var userId = req.user.sub;
+
+    Message.update({receiver: userId, viewed: 'false'}, {viewed: 'true'}, {"multi":true}, (err, messageUpdated) => {
+        if (err) return res.status(500).send({message: 'Error en la petición'});
+        return res.status(200).send({messageUpdated});
+    })
+}
+
 module.exports = {
     // Metodo de prueba
     probando,
@@ -104,5 +114,7 @@ module.exports = {
     // Lista los mensajes enviados
     getEmitMessages,
     // Cuenta el numero de mensajes sin leer
-    getUnviewedMessages
+    getUnviewedMessages,
+    // Actualiza los mensajes a vistos
+    setViewedMessages
 }
