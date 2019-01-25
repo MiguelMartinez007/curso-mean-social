@@ -6,6 +6,7 @@ var bcrypt = require('bcrypt-nodejs'); /* Nos permitira sifrar las contrasenas *
 var User = require('../models/user');
 /* Se carga el modelo follow */
 var Follow = require('../models/follow');
+var Publication = require('../models/publication');
 /* Importamos el servicio que genera el tocken para encriptar los datos del usuario */
 var jwt = require('../services/jwt');
 /* Cargamos la libreria de mongoose paginated */
@@ -319,10 +320,15 @@ function getCountFollow(userId, res){
 
         Follow.count({"followed":userId}).exec((err, Me) => {
             if(err) return handleError(err);
-            
-            return res.status(200).send({
-                following: Me,
-                followed: We
+
+            Publication.count({"user": userId}).exec((err, publication) => {
+                if(err) return handleError(err);
+                
+                return res.status(200).send({
+                    following: Me,
+                    followed: We,
+                    publications: publication
+                });
             });
         });
     });
