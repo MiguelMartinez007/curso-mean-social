@@ -1,0 +1,11 @@
+/* Cabecera */
+.navigation {
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
+.navigation .navbar {
+    border-radius: 0px !important;
+    background-color: #090B10 !important;
+    border: none !important;
+}
