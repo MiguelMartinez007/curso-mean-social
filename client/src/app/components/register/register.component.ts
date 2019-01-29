@@ -29,4 +29,7 @@ export class RegisterComponent implements OnInit {
     console.log('Componente de register cargando...');
   }
 
+  onSubmit() {
+    console.log(this.user);
+  }
 }
