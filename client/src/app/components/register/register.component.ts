@@ -32,7 +32,6 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.user);
     this._userService.register(this.user);
   }
 }
