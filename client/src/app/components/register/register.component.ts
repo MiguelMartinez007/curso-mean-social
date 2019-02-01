@@ -12,6 +12,7 @@ import { UserService } from "../../services/user.service";
 export class RegisterComponent implements OnInit {
   public title:String;
   public user: User;
+  public status:String;
 
   constructor(private _route: ActivatedRoute, private _router: Router, private _userService: UserService) {
     this.title = 'Registrate';
@@ -31,7 +32,23 @@ export class RegisterComponent implements OnInit {
     console.log('Componente de register cargando...');
   }
 
-  onSubmit() {
-    this._userService.register(this.user);
+  onSubmit(form) {
+    // Con el petodo subscribe se recuperan los datos debueltos por parte de la funcion
+    this._userService.register(this.user).subscribe(
+      response => {
+        if(response.user && response.user._id) {
+          // console.log(response.user);
+          this.status = 'success';
+          // Formatea los datos del formulario
+          form.reset();
+        }else{
+          this.status = 'error';
+        }
+      },
+      error => {
+        console.log(<any>error);
+        this.status = 'error';
+      }
+    );
   }
 }
