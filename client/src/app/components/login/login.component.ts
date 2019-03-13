@@ -13,6 +13,10 @@ export class LoginComponent implements OnInit {
   public title:String;
   public user:User;
   public status:string;
+  // Llevara la identidad del usuario
+  public indentity;
+  // Cargara el token del usuario
+  public token;
 
   constructor(private _route:ActivatedRoute, private _router: Router, private _userService:UserService) {
     this.title = 'Identificate';
@@ -36,9 +40,19 @@ export class LoginComponent implements OnInit {
     // Loguear al usuario y conseguir sus datos
     this._userService.signup(this.user).subscribe(
       response => {
-        // Mando mensaje del objeto usuario
-        console.log(response.user);
-        this.status = 'success';
+        // Agregamos el valor a la variable identity
+        this.indentity = response.user;
+
+        // En caso de que no llegue algun usuario
+        if(!this.indentity || !this.indentity._id) {
+          this.status = 'error';
+        }else {
+          this.status = 'success';
+
+          // Persistir datos del usuario
+
+          // Conseguir el token
+        }
       },
       error => {
         // Asigno el error a una variable
@@ -57,4 +71,37 @@ export class LoginComponent implements OnInit {
     console.log(this.user);
   }
 
+  gettoken() {
+    // Loguear al usuario y conseguir sus datos
+    this._userService.signup(this.user, 'true').subscribe(
+      response => {
+        // Agregamos el valor a la variable identity
+        this.token = response.token;
+
+        console.log(this.token);
+
+        // En caso de que no llegue algun usuario
+        if(this.token.length <= 0) {
+          this.status = 'error';
+        }else {
+          this.status = 'success';
+
+          // Persistir datos del usuario
+
+          // Conseguir los contadores o estadisticas del usuario
+          this.gettoken();
+        }
+      },
+      error => {
+        // Asigno el error a una variable
+        var errorMessage = <any>error;
+        // Mando mensaje sobre el error
+        console.log(errorMessage);
+        // Si el error no es nulo entonces cambio el valor de la variabe status a error
+        if(errorMessage != null) {
+          this.status = 'error';
+        }
+      }
+    );
+  }
 }
