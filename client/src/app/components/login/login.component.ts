@@ -53,6 +53,10 @@ export class LoginComponent implements OnInit {
           this.status = 'success';
 
           // Persistir datos del usuario
+          // Esto se hace guardando el objeto identity en el localStorage que es una bd en el navegador
+          // Esta propiedad soporta solo cadenas de texto por lo que se tiene que convertir el objeto a una cadena
+          // De esta forma se puede estar en sesion
+          localStorage.setItem('identity', JSON.stringify(this.indentity));
 
           // Conseguir el token
           this.gettoken();
@@ -90,7 +94,8 @@ export class LoginComponent implements OnInit {
         }else {
           this.status = 'success';
 
-          // Persistir datos del usuario
+          // Persistir token del usuario
+          localStorage.setItem('token', this.token);
 
           // Conseguir los contadores o estadisticas del usuario
           
