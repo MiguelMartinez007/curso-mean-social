@@ -103,7 +103,7 @@ function loginUser(req, res) {
                     if (params.gettoken) {
                         // Generar y devolver el token
                         return res.status(200).send({
-                            tocken: jwt.createToken(user)
+                            token: jwt.createToken(user)
                         });
 
                     } else {

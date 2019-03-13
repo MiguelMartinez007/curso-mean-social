@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { User } from 'src/app/models/user';
 import { UserService } from 'src/app/services/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { getToken } from '@angular/router/src/utils/preactivation';
 
 @Component({
   selector: 'app-login',
@@ -43,6 +44,8 @@ export class LoginComponent implements OnInit {
         // Agregamos el valor a la variable identity
         this.indentity = response.user;
 
+        console.log(this.indentity);
+
         // En caso de que no llegue algun usuario
         if(!this.indentity || !this.indentity._id) {
           this.status = 'error';
@@ -52,6 +55,7 @@ export class LoginComponent implements OnInit {
           // Persistir datos del usuario
 
           // Conseguir el token
+          this.gettoken();
         }
       },
       error => {
@@ -68,7 +72,7 @@ export class LoginComponent implements OnInit {
 
     // alert(this.user.email);
     // alert(this.user.password);
-    console.log(this.user);
+    // console.log(this.user);
   }
 
   gettoken() {
@@ -89,7 +93,7 @@ export class LoginComponent implements OnInit {
           // Persistir datos del usuario
 
           // Conseguir los contadores o estadisticas del usuario
-          this.gettoken();
+          
         }
       },
       error => {
