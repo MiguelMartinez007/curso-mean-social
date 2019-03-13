@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   public title:String;
   public user:User;
+  public status:string;
 
   constructor(private _route:ActivatedRoute, private _router: Router, private _userService:UserService) {
     this.title = 'Identificate';
@@ -32,8 +33,27 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    alert(this.user.email);
-    alert(this.user.password);
+    // Loguear al usuario y conseguir sus datos
+    this._userService.signup(this.user).subscribe(
+      response => {
+        // Mando mensaje del objeto usuario
+        console.log(response.user);
+        this.status = 'success';
+      },
+      error => {
+        // Asigno el error a una variable
+        var errorMessage = <any>error;
+        // Mando mensaje sobre el error
+        console.log(errorMessage);
+        // Si el error no es nulo entonces cambio el valor de la variabe status a error
+        if(errorMessage != null) {
+          this.status = 'error';
+        }
+      }
+    );
+
+    // alert(this.user.email);
+    // alert(this.user.password);
     console.log(this.user);
   }
 
