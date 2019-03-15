@@ -9,6 +9,10 @@
     padding-bottom: 14px;
 }
 
+.active {
+    background-color: #292929;
+}
+
 /* Cabecera */
 .navigation {
     margin: 0px !important;
@@ -19,4 +23,9 @@
     border-radius: 0px !important;
     background-color: #090B10 !important;
     border: none !important;
+}
+
+.navigation .navbar a:hover {
+    background-color: #292929 !important;
+    color: white !important;
 }
