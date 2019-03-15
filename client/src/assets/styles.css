@@ -29,3 +29,13 @@
     background-color: #292929 !important;
     color: white !important;
 }
+
+.jumbotron {
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.jumbotron a {
+    margin: auto 5px !important;
+}
