@@ -14,6 +14,38 @@
         <li><a [routerLink]="['/login']" [routerLinkActive]="['active']">Login</a></li>
         <li><a [routerLink]="['/registro']" [routerLinkActive]="['active']">Registro</a></li>
       </ul>
+
+      <ul class="nav navbar navbar-right">
+        <li class="avatar">
+          <!-- Cargar imagen de usuario -->
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            {{identity.name}} <span class="caret"></span>
+          </a>
+
+          <ul class="dropdown-menu">
+            <li>
+              <a href="#">
+                <span class="glyphicon glyphicon-user"></span>
+                Mi perfil
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="glyphicon glyphicon-cog"></span>
+                Mis datos
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <span class="glyphicon glyphicon-log-out"></span>
+                Cerrar sesión
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </nav>
 </div>

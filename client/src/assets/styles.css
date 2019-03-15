@@ -39,3 +39,16 @@
 .jumbotron a {
     margin: auto 5px !important;
 }
+
+.navigation .navbar .dropdown-menu *{
+    color: black !important;
+}
+
+.nav .open > a, .nav .open > a:focus, .nav .open > a:focus {
+    background: #292929 !important;
+}
+
+.navigation .navbar .dropdown-menu a:hover {
+    background-color: #eee !important;
+    color: black !important;
+}
