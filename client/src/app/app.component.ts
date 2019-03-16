@@ -1,5 +1,6 @@
 import { Component, OnInit, DoCheck } from '@angular/core';
 import { UserService } from './services/user.service';
+import { Router, ActivatedRoute, Params } from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ export class AppComponent implements OnInit, DoCheck {
   public title: String;
   public identity;
 
-  constructor(private _userService:UserService,) {
+  constructor(private _userService:UserService, private _router: Router, private _route: ActivatedRoute) {
     this.title = 'NGSOIAL';
   }
 
@@ -23,5 +24,12 @@ export class AppComponent implements OnInit, DoCheck {
   // Esta funcion nos permite actualizar siertas partes del código
   ngDoCheck() {
     this.identity = this._userService.getIdentity();
+  }
+
+  // Función para cerrar sesión
+  logout() {
+    localStorage.clear();
+    this.identity = null;
+    this._router.navigate(['/login']);
   }
 }

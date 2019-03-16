@@ -99,6 +99,9 @@ export class LoginComponent implements OnInit {
 
           // Conseguir los contadores o estadisticas del usuario
           
+          
+          // Redireccionamos a la pagina de home
+          this._router.navigate(['/home']);
         }
       },
       error => {
