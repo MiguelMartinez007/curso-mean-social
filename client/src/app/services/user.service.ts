@@ -94,4 +94,14 @@ export class UserService {
       return this._http.get(this.url + 'counters/', {headers: headers});
     }
   }
+
+  // Funcion para actualizar los datos del usuario
+  updateUser(user: User): Observable<any> {
+    // Tomo los valores que seran actualziados
+    let params = JSON.stringify(user);
+
+    let headers = new HttpHeaders().set('Content-Type','application/json').set('Authorization',this.getToken());
+
+    return this._http.put(this.url + 'update-user/' + user._id, params, {headers: headers});
+  }
 }

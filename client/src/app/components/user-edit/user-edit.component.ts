@@ -31,6 +31,32 @@ export class UserEditComponent implements OnInit {
 
   onSubmit() {
     console.log(this.user);
+    this._userService.updateUser(this.user).subscribe(
+      response => {
+        // En caso de que no me retorne ningun usuario
+        if(!response.user) {
+          this.status = 'error';
+        }else {
+          // Si si retorna el usuario
+          this.status = 'success';
+
+          // Actualizo el identity del localStorage
+          localStorage.setItem('identity', JSON.stringify(this.user));
+          // Y actualizo la identity actual
+          this.identity = this.user;
+
+          // Subida de imagen de usuario
+          
+        }
+      },
+      error => {
+        var errorMessage = <any>error;
+        console.log(errorMessage);
+        if(errorMessage != null) {
+          this.status = 'error';
+        }
+      }
+    );
   }
 
 }

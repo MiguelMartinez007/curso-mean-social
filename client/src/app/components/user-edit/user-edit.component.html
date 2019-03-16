@@ -3,6 +3,15 @@
     {{title}}
   </h1>
 
+  <!-- Mensajes de error -->
+  <div class="alert alert-success" *ngIf="status == 'success'">
+    Se han actualizado tus datos correctamente
+  </div>
+  
+  <div class="alert alert-danger" *ngIf="status == 'error'">
+      Se no han actualizado tus datos correctamente
+    </div>
+
   <form #userEditForm="ngForm" (ngSubmit)="onSubmit()" class="col-lg-12">
     <!-- Nombre -->
     <p>
