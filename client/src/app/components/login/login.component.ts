@@ -98,8 +98,8 @@ export class LoginComponent implements OnInit {
           localStorage.setItem('token', this.token);
 
           // Conseguir los contadores o estadisticas del usuario
-          
-          
+          this.getCounters();
+
           // Redireccionamos a la pagina de home
           this._router.navigate(['/home']);
         }
@@ -113,6 +113,18 @@ export class LoginComponent implements OnInit {
         if(errorMessage != null) {
           this.status = 'error';
         }
+      }
+    );
+  }
+
+  // Llamamos al servicio para saver las estadisticas
+  getCounters() {
+    this._userService.getCounters().subscribe(
+      response => {
+        console.log(response);
+      },
+      error => {
+        console.log(<any>error);
       }
     );
   }

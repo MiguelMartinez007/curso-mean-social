@@ -12,6 +12,7 @@ export class UserService {
   public url:String;
   public identity;
   public token;
+  public stats;
 
   constructor(public _http: HttpClient) {
     this.url = GLOBAL.url;
@@ -66,5 +67,31 @@ export class UserService {
     }
 
     return this.token;
+  }
+  
+  // Consigue la informacion de estadisticas del localStorage
+  getStats() {
+    let stats = JSON.parse(localStorage.getItem('stats'));
+
+    if(stats != 'undefined') {
+      this.stats = stats;
+    }else {
+      this.stats = null;
+    }
+
+    this.stats;
+  }
+
+  // Saca estadisticas de un usuario en particulas y de todo los usuarios
+  getCounters(userId = null): Observable<any> {
+    // Mandamos las cabezeras a el backend
+    let headers = new HttpHeaders().set('Content-Type','application/json').set('Authorization',this.getToken());
+
+    // Comprbamos si el userId es diferente a null
+    if(userId != null) {
+      return this._http.get(this.url + 'counters/' + userId, {headers: headers});
+    }else {
+      return this._http.get(this.url + 'counters/', {headers: headers});
+    }
   }
 }
