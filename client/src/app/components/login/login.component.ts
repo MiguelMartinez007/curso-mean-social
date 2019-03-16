@@ -50,8 +50,6 @@ export class LoginComponent implements OnInit {
         if(!this.indentity || !this.indentity._id) {
           this.status = 'error';
         }else {
-          this.status = 'success';
-
           // Persistir datos del usuario
           // Esto se hace guardando el objeto identity en el localStorage que es una bd en el navegador
           // Esta propiedad soporta solo cadenas de texto por lo que se tiene que convertir el objeto a una cadena
@@ -92,16 +90,11 @@ export class LoginComponent implements OnInit {
         if(this.token.length <= 0) {
           this.status = 'error';
         }else {
-          this.status = 'success';
-
           // Persistir token del usuario
           localStorage.setItem('token', this.token);
 
           // Conseguir los contadores o estadisticas del usuario
           this.getCounters();
-
-          // Redireccionamos a la pagina de home
-          this._router.navigate(['/home']);
         }
       },
       error => {
@@ -121,7 +114,10 @@ export class LoginComponent implements OnInit {
   getCounters() {
     this._userService.getCounters().subscribe(
       response => {
-        console.log(response);
+        localStorage.setItem('stats', JSON.stringify(response));
+        this.status = 'success';
+        // Redireccionamos a la pagina de home
+        this._router.navigate(['/home']);
       },
       error => {
         console.log(<any>error);
