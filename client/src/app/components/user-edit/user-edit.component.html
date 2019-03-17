@@ -45,6 +45,9 @@
         El email es obligatorio
       </span>
     </p>
+    <div *ngIf="user.image">
+      <img src="{{ url + 'get-image-user/' + user._id + '/' + user.image }}">
+    </div>
     <p>
       <label>Sube tu avatar</label>
       <input type="file" placeholder="Subir imagen" (change)="fileChangeEvent($event)">
