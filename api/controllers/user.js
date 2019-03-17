@@ -394,7 +394,7 @@ function uploadImage(req, res) {
         console.log(file_path);
 
         /* Se toma la direccion del archivo y se divide por directorios */
-        var file_split = file_path.split('/');
+        var file_split = file_path.split('\\');
         console.log(file_split);
 
         /* Sacamos el nombre del archivo */
@@ -402,7 +402,7 @@ function uploadImage(req, res) {
         console.log(file_name);
 
         /* Sacamos la extencion del archivo */
-        var ext_split = file_name.split('.');
+        var ext_split = file_name.split('\.');
         var file_ext = ext_split[1];
         console.log(file_ext);
 

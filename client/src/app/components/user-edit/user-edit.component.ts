@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/models/user';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UploadService } from 'src/app/services/upload.service';
+import { GLOBAL } from 'src/app/services/global';
 
 @Component({
   selector: 'app-user-edit',
@@ -15,12 +17,14 @@ export class UserEditComponent implements OnInit {
   public identity;
   public token;
   public status: String;
+  public url:String;
 
-  constructor(private _route: ActivatedRoute, private _router: Router, private _userService: UserService) {
+  constructor(private _route: ActivatedRoute, private _router: Router, private _userService: UserService, private _uploadService: UploadService) {
     this.title = 'Actualizar mis datos';
     this.user = this._userService.getIdentity();
     this.identity = this.user;
     this.token = this._userService.getToken();
+    this.url = GLOBAL.url;
 
   }
 
@@ -46,7 +50,11 @@ export class UserEditComponent implements OnInit {
           this.identity = this.user;
 
           // Subida de imagen de usuario
-          
+          this._uploadService.makeFileRequest(this.url + 'upload-image-user/' + this.user._id, [], this.filesToUpload, this.token, 'image').then((result: any) => {
+            console.log(result);
+            this.user.image = result.image;
+            localStorage.setItem('identity', JSON.stringify(this.user));
+          });
         }
       },
       error => {
@@ -57,6 +65,12 @@ export class UserEditComponent implements OnInit {
         }
       }
     );
+  }
+
+  public filesToUpload: Array<File>;
+  fileChangeEvent(fileInput: any) {
+    this.filesToUpload = <Array<File>>fileInput.target.files;
+    console.log(this.filesToUpload);
   }
 
 }
