@@ -346,17 +346,41 @@ function updateUser(req, res) {
         return res.status(500).send({ message: 'No tienes permiso para actualizar los datos del usuario' });
     }
 
-    /* Se manda una funcion calbak al servidor de Mongoose para que actualize los datos del usuario especificado con los datos nuevos, esto debuelve un objeto con los datos originales del usuario, y en caso de que se quiera obtener el nuevo objeto con los datos actualizados se escribe la siguiente instruccion */
-    /* Instruccion: ,{new: true}, */
-    User.findByIdAndUpdate(userId, update, { new: true }, (err, userUpdate) => {
-        /* Si surge un error */
-        if (err) return res.status(500).send({ message: 'Error en la petición' });
-        /* Nos devuelve el usuario con los datos anteriores, en caso de que no debuelba nada se muestra el siguiente error */
-        if (!userUpdate) return res.status(404).send({ message: 'No se ha podido actualizar el usuario' });
+    // Verifico que el nick y el correo no existan ya
+    User.findOne({'nick': update.nick}).exec((err,user) => {
+        // En caso de que suceda algun error
+        if(err) return res.status(500).send({message: 'Error al actualizar los datos'});
 
-        return res.status(200).send({
-            user: userUpdate
-        });
+        // Comprobamos que exista algun usuario
+        if(user && user._id != userId) {
+            console.log(user);
+            return res.status(200).send({message: 'El usuario ya existe'});
+        }else {
+            // Verifico que el correo no este dado de alta ya
+            User.findOne({'email': update.email}).exec((err, useremail) => {
+                // En caso de un error
+                if(err) return res.status(500).send({message: 'Error al actualizar los datos'});
+
+                // Comprobamos que no exista algun usuario
+                if(useremail && useremail._id != userId) {
+                    console.log(useremail);
+                    return res.status(200).send({message: 'El usuario ya existe'})
+                }else {
+                    /* Se manda una funcion calbak al servidor de Mongoose para que actualize los datos del usuario especificado con los datos nuevos, esto debuelve un objeto con los datos originales del usuario, y en caso de que se quiera obtener el nuevo objeto con los datos actualizados se escribe la siguiente instruccion */
+                    /* Instruccion: ,{new: true}, */
+                    User.findByIdAndUpdate(userId, update, { new: true }, (err, userUpdate) => {
+                        /* Si surge un error */
+                        if (err) return res.status(500).send({ message: 'Error en la petición' });
+                        /* Nos devuelve el usuario con los datos anteriores, en caso de que no debuelba nada se muestra el siguiente error */
+                        if (!userUpdate) return res.status(404).send({ message: 'No se ha podido actualizar el usuario' });
+
+                        return res.status(200).send({
+                            user: userUpdate
+                        });
+                    });
+                }
+            });
+        }
     });
 }
 
