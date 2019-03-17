@@ -1,0 +1,125 @@
+{
+	"info": {
+		"_postman_id": "27f3791f-bd41-4448-b7ad-8d2a0ccddc02",
+		"name": "curso-mean-social",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:3800/api/get-image-user/CTkrL2HBHu1Ddv1MehodObNz.jpg",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1Yzg4OTk2NGFlZWQ5ZDE2MTAzNjNhN2EiLCJuYW1lIjoiQWRtaW5pc3RyYWRvciIsInN1cm5hbWUiOiJNYXJ0aW5leiIsIm5pY2siOiJBZG1pbmlzdHJhZG9yIiwiZW1haWwiOiJtaWd1ZWxtYXJ0aW5lemR3QG91dGxvb2suY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImltYWdlIjpudWxsLCJpYXQiOjE1NTI3ODg0MzF9.dkPtXWw5KjKXLDSTlD_4W3IKEI1JcuJJ5YGXs0Pnjek",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:3800/api/get-image-user/CTkrL2HBHu1Ddv1MehodObNz.jpg",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3800",
+					"path": [
+						"api",
+						"get-image-user",
+						"CTkrL2HBHu1Ddv1MehodObNz.jpg"
+					]
+				},
+				"description": "Consultar alguna imagen"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3800/api/upload-image-user/5c889964aeed9d1610363a7a",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1Yzg4OTk2NGFlZWQ5ZDE2MTAzNjNhN2EiLCJuYW1lIjoiQWRtaW5pc3RyYWRvciIsInN1cm5hbWUiOiJNYXJ0aW5leiIsIm5pY2siOiJBZG1pbmlzdHJhZG9yIiwiZW1haWwiOiJtaWd1ZWxtYXJ0aW5lemR3QG91dGxvb2suY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImltYWdlIjpudWxsLCJpYXQiOjE1NTI3ODg0MzF9.dkPtXWw5KjKXLDSTlD_4W3IKEI1JcuJJ5YGXs0Pnjek",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": ""
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3800/api/upload-image-user/5c889964aeed9d1610363a7a",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3800",
+					"path": [
+						"api",
+						"upload-image-user",
+						"5c889964aeed9d1610363a7a"
+					]
+				},
+				"description": "Actualizar una imagen del usuario"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3800/api/login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "miguelmartinezdw@outlook.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "1234",
+							"type": "text"
+						},
+						{
+							"key": "gettoken",
+							"value": "true",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3800/api/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3800",
+					"path": [
+						"api",
+						"login"
+					]
+				},
+				"description": "Acceder al sitio"
+			},
+			"response": []
+		}
+	]
+}
