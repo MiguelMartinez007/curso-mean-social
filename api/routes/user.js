@@ -24,7 +24,7 @@ api.get('/users/:page?', md_auth.ensureAuth, userCotrollers.getUsers);
 api.get('/counters/:id?', md_auth.ensureAuth, userCotrollers.getCounters);
 api.put('/update-user/:id', md_auth.ensureAuth, userCotrollers.updateUser);
 api.post('/upload-image-user/:id', [md_auth.ensureAuth, md_upload], userCotrollers.uploadImage);
-api.post('/get-image-user/:imageFile', userCotrollers.getImageFile);
+api.get('/get-image-user/:imageFile', userCotrollers.getImageFile);
 
 /* Finalmente exportamos api */
 module.exports = api;
