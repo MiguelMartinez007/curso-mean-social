@@ -450,9 +450,9 @@ function getImageFile(req, res) {
 
     var userId = req.params.id;
 
-    if (userId != req.user.sub) {
-        return res.status(500).send({ message: 'No tienes permiso para consultar la imagen' });
-    }
+    // if (userId != req.user.sub) {
+    //     return res.status(500).send({ message: 'No tienes permiso para consultar la imagen' });
+    // }
 
     /* Comprobando de que existe el archivo */
     fs.exists(pathFile, (exists) => {
